@@ -75,6 +75,10 @@ function validate(direction) {
     y = centre[0];
     x = centre[1];
     switch (direction) {
+        case 0:
+        case 32:
+            return grid[y][x]["Entities"][0] == undefined;
+            break;
         case 37:
             return grid[y][x - 1]["Entities"][0] == undefined;
             break;
@@ -94,7 +98,20 @@ function validate(direction) {
     return false;
 }
 
+function bomb() {
+    if (!bombDisabled) {
+        grid[centre[0]][centre[1]]["Entities"][0] = {
+            "EntityType": 1
+        };
+        bombDisabled = true;
+        setTimeout(function() {
+            bombDisabled = false;
+        }, 4000);
+    }
+}
+
 $(document).keydown(function(e) {
+    e.preventDefault();
     if (validate(e.which)) {
         switch (e.which) {
             case 37: // left
@@ -125,11 +142,14 @@ $(document).keydown(function(e) {
                     return centre;
                 }
                 break;
+            case 0:
+            case 32:
+                bomb();
+                break;
             default:
                 return; // exit this handler for other keys
         }
     }
-    e.preventDefault(); // prevent the default action (scroll / move caret)
 });
 
 //Resize function
@@ -138,4 +158,5 @@ window.onresize = window.onload = function() {
 }
 
 var centre = [5, 5];
+var bombDisabled = false;
 $(document).ready(render(centre));
