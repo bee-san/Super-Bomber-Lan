@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SuperBomberLanServer.Local;
 
 namespace SuperBomberLanServer
@@ -19,6 +22,8 @@ namespace SuperBomberLanServer
             //Generate the map
             Console.WriteLine("Generating map....");
             Map map = Map.CreateMap(64, 64);
+            var test = JsonConvert.SerializeObject(map);
+            Debugger.Break();
 
             await Task.Delay(-1);
         }

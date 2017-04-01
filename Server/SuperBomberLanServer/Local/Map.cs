@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 using SuperBomberLanServer.Local.Entities;
 
 namespace SuperBomberLanServer.Local
 {
     public class Map
     {
+        [JsonProperty("width")]
         public Int32 Width { get; internal set; }
 
+        [JsonProperty("height")]
         public Int32 Height { get; internal set; }
 
+        [JsonProperty("tiles")]
         public Tile[,] Tiles { get; internal set; }
 
         public static Map CreateMap(int width, int height)
