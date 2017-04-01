@@ -4,11 +4,15 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SuperBomberLanServer.Local;
+using SuperBomberLanServer.Network;
 
 namespace SuperBomberLanServer
 {
     class Program
     {
+        public static Server Server;
+        public static Map Map;
+
         static void Main(string[] args) => new Program().Run().GetAwaiter().GetResult();
 
         public async Task Run()
@@ -36,11 +40,19 @@ namespace SuperBomberLanServer
 
             //Generate the map
             Console.WriteLine("Generating map....");
-            Map map = Map.CreateMap(64, 64);
+            Map = Map.CreateMap(64, 64);
 
-            //
-            var test = JsonConvert.SerializeObject(map);
-            Debugger.Break();
+            //var test = JsonConvert.SerializeObject(map);
+            
+            Console.WriteLine("Starting server on port 12345....");
+            Server = new Server(12345);
+            Server.Start();
+
+            Console.WriteLine("Server reported sucessful startup");
+
+            Console.WriteLine("Ready");
+
+            Console.WriteLine("Waiting for admin client to connect...");
 
             await Task.Delay(-1);
         }
