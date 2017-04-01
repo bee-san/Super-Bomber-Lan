@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using SuperBomberLanServer.Local.Entities;
@@ -28,6 +29,7 @@ namespace SuperBomberLanServer.Local
 
             CreateTiles(ref map);
             CreateWalls(ref map);
+            CreateBoxes(ref map);
 
             return map;
         }
@@ -55,6 +57,25 @@ namespace SuperBomberLanServer.Local
                     if (i % 2 == 0 && j % 2 == 0)
                     {
                         map.Tiles[i, j].Entities.Add(new WallEntity());
+                    }
+                }
+            }
+        }
+
+        private static void CreateBoxes(ref Map map)
+        {
+            Random random = new Random();
+
+            for (int i = 0; i < map.Width; i++)
+            {
+                for (int j = 0; j < map.Height; j++)
+                {
+                    if (!map.Tiles[i, j].Entities.Any())
+                    {
+                        if (random.Next(0, 100) < 40)
+                        {
+                            map.Tiles[i, j].Entities.Add(new BoxEntity());
+                        }
                     }
                 }
             }
