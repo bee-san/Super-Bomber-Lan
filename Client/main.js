@@ -115,12 +115,16 @@ function bomb() {
 }
 
 $(document).keydown(function(e) {
+    const socket = new WebSocket('ws://138.68.178.39:12345');
     e.preventDefault();
     if (validate(e.which)) {
         switch (e.which) {
             case 37: // move left
                 if (centre[1] > 0) { //if within left boundary
                     centre = render([centre[0], centre[1] - 1]); //render with the player's position one space to the left
+                    socket.addEventListener('open', function (event) {
+                        socket.send('{ "op": 5, "data": "Left"}');
+                    });
                     return centre;
                 }
                 break;
