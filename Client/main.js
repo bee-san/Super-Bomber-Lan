@@ -15,7 +15,6 @@ function render(centre) {
     fovradius = Math.floor(fov / 2);
     y = centre[0] - fovradius;
     x = centre[1] - fovradius;
-    console.log(y,x);
     $('.gridSquare').each(function(i, obj) {
         var outOfBoundsY = y < 0 || y >= height;
         var outOfBoundsX = x < 0 || x >= width;
@@ -27,12 +26,10 @@ function render(centre) {
             $(obj).css("border-radius", "0px");
         } else {
             if (typeof grid[y][x]["Entities"][0] == "undefined") {
-              console.log("undef");
                 $(obj).css("background-color", "grey");
                 $(obj).css("border", "5px solid grey");
                 $(obj).css("border-radius", "0px");
             } else {
-                console.log("etype: ", grid[y][x]["Entities"][0]["EntityType"])
                 switch (grid[y][x]["Entities"][0]["EntityType"]) {
                     case 0:
                         $(obj).css("background-color", "red");
@@ -62,7 +59,7 @@ function render(centre) {
                 }
             }
         }
-        if (y == centre[0] && x == centre[1]) {
+        if (y == centre[0] && x == centre[1] && !admin) {
             $(obj).css("background-color", "cyan");
             $(obj).css("border", "5px inset blue");
             $(obj).css("border-radius", "100%");
@@ -131,7 +128,7 @@ $(document).keydown(function(e) {
     switch (e.which) {
         case 37: // move left
             e.preventDefault();
-            if (validate(e.which)) {
+            if (validate(e.which) || admin) {
                 if (centre[1] > 0) { //if within left boundary
                     centre = render([centre[0], centre[1] - 1]); //render with the player's position one space to the left
                     socket.send('{ "op": 5, "data": "LEFT"}');
@@ -141,7 +138,7 @@ $(document).keydown(function(e) {
             break;
         case 38: // up
             e.preventDefault();
-            if (validate(e.which)) {
+            if (validate(e.which) || admin) {
                 if (centre[0] > 0) {
                     centre = render([centre[0] - 1, centre[1]]);
                     socket.send('{ "op": 5, "data": "UP"}');
@@ -151,7 +148,7 @@ $(document).keydown(function(e) {
             break;
         case 39: // right
             e.preventDefault();
-            if (validate(e.which)) {
+            if (validate(e.which) || admin) {
                 if (centre[1] < width - 1) {
                     centre = render([centre[0], centre[1] + 1]);
                     socket.send('{ "op": 5, "data": "RIGHT"}');
@@ -161,7 +158,7 @@ $(document).keydown(function(e) {
             break;
         case 40: // down
             e.preventDefault();
-            if (validate(e.which)) {
+            if (validate(e.which) || admin) {
                 if (centre[0] < height - 1) {
                     centre = render([centre[0] + 1, centre[1]]);
                     socket.send('{ "op": 5, "data": "DOWN"}');
@@ -185,7 +182,6 @@ window.onresize = window.onload = function() {
 }
 
 function opcodeManagement(socket) {
-    console.log("ocm");
     socket.onmessage = function(evt) {
         var received_msg = JSON.parse(evt.data);
         switch (received_msg["op"]) {
@@ -196,6 +192,7 @@ function opcodeManagement(socket) {
                 height = received_msg["data"]["map"]["height"];
                 break;
             case 3:
+                console.log("3 received. You're now literally God.");
                 admin = true;
                 break;
             case 4:
@@ -235,7 +232,7 @@ function opcodeManagement(socket) {
                 break;
             case 7:
                 //???
-                console.log("unknown!");
+                console.log("Explosion!");
                 break;
             case 8:
                 //render new killfeed entry in iframe
