@@ -12,6 +12,7 @@ namespace SuperBomberLanServer
     {
         public static Server Server;
         public static Map Map;
+        public static GameState GameState = GameState.StartingUp;
 
         static void Main(string[] args) => new Program().Run().GetAwaiter().GetResult();
 
@@ -56,5 +57,12 @@ namespace SuperBomberLanServer
 
             await Task.Delay(-1);
         }
+    }
+
+    public enum GameState
+    {
+        StartingUp,
+        Running,
+        Completed
     }
 }
