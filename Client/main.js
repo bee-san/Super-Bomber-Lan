@@ -10,40 +10,40 @@ var centre = [5, 5];
 var bombDisabled = false;
 
 function render(centre) {
-    var y = centre[0] - fovradius; //upper boundary
-    var x = centre[1] - fovradius; //left side boundary
+    var y = centre[0] - fovradius;
+    var x = centre[1] - fovradius;
     $('.gridSquare').each(function(i, obj) {
         var outOfBoundsY = y < 0 || y >= height;
         var outOfBoundsX = x < 0 || x >= width;
         var outOfFOVY = y > centre[0] + fovradius || y < centre[0] - fovradius;
         var outOfFOVX = x > centre[1] + fovradius || x < centre[1] - fovradius;
         if (outOfBoundsY || outOfBoundsX || outOfFOVY || outOfFOVX) {
-            $(obj).css("fill", "white");
+            $(obj).css("background-color", "white");
         } else {
             if (grid[y][x]["Entities"][0] == undefined) {
-                $(obj).css("fill", "grey");
+                $(obj).css("background-color", "grey");
             } else {
                 switch (grid[y][x]["Entities"][0]["EntityType"]) {
-                    case 0: //Player
-                        $(obj).css("fill", "red");
+                    case 0:
+                        $(obj).css("background-color", "red");
                         break;
-                    case 1: //Bomb
-                        $(obj).css("fill", "black");
+                    case 1:
+                        $(obj).css("background-color", "black");
                         break;
-                    case 2: //Unbreakable wall
-                        $(obj).css("fill", "brown");
+                    case 2:
+                        $(obj).css("background-color", "brown");
                         break;
-                    case 3: //Breakable wall
-                        $(obj).css("fill", "orange");
+                    case 3:
+                        $(obj).css("background-color", "orange");
                         break;
-                    default: //empty space
-                        $(obj).css("fill", "grey");
+                    default:
+                        $(obj).css("background-color", "grey");
                         break;
                 }
             }
         }
         if (y == centre[0] && x == centre[1]) {
-            $(obj).css("fill", "cyan"); //current player
+            $(obj).css("background-color", "cyan");
         }
         x += 1;
         if (x == centre[1] + fovradius + 1) {
@@ -54,15 +54,16 @@ function render(centre) {
     return centre;
 };
 
-function resize() { //resize game screen to window
+function resize() {
     var sizeX = $(window).width();
     var sizeY = $(window).height();
     $('#game').attr("width", sizeY);
     $('#game').attr("height", sizeY);
-    $('.gridSquare').attr("width", sizeY / fov);
-    $('.gridSquare').attr("height", sizeY / fov);
+    $('.gridSquare').attr("width", sizeY / 2 / fov);
+    $('.gridSquare').attr("height", sizeY / 2 / fov);
     var y = 0;
     var x = 0;
+    /*
     $('.gridSquare').each(function(i, obj) {
         $(obj).attr("x", x * (sizeY / fov) + (sizeY / fov / 2));
         $(obj).attr("y", y * (sizeY / fov) + (sizeY / fov / 2));
@@ -72,10 +73,11 @@ function resize() { //resize game screen to window
             y += 1;
         }
     });
+    */
 }
 
 function validate(direction) { //checks depending on direction as to
-  //what's in the destination space
+    //what's in the destination space
     y = centre[0];
     x = centre[1];
     switch (direction) {
@@ -115,44 +117,54 @@ function bomb() {
 }
 
 $(document).keydown(function(e) {
-    e.preventDefault();
-    if (validate(e.which)) {
-        switch (e.which) {
-            case 37: // move left
-                if (centre[1] > 0) { //if within left boundary
-                    centre = render([centre[0], centre[1] - 1]); //render with the player's position one space to the left
+    switch (e.which) {
+        case 37: // left
+            e.preventDefault();
+            if (validate(e.which)) {
+                if (centre[1] > 0) {
+                    centre = render([centre[0], centre[1] - 1]);
                     return centre;
                 }
-                break;
+            }
+            break;
 
-            case 38: // up
-                if (centre[0] > 0) { //if within upper boundary
-                    centre = render([centre[0] - 1, centre[1]]); //render with the player's position upward by one
+        case 38: // up
+            e.preventDefault();
+            if (validate(e.which)) {
+                if (centre[0] > 0) {
+                    centre = render([centre[0] - 1, centre[1]]);
                     return centre;
                 }
-                break;
+            }
+            break;
 
-            case 39: // right
-                if (centre[1] < width - 1) { //if within right boundary
-                    centre = render([centre[0], centre[1] + 1]); //render with the player's position right by one
+        case 39: // right
+            e.preventDefault();
+            if (validate(e.which)) {
+                if (centre[1] < width - 1) {
+                    centre = render([centre[0], centre[1] + 1]);
                     console.log(centre);
                     return centre;
                 }
-                break;
+            }
+            break;
 
-            case 40: // down
-                if (centre[0] < height - 1) { //if within lower boundary
-                    centre = render([centre[0] + 1, centre[1]]); //render with the player's position down by one
+        case 40: // down
+            e.preventDefault();
+            if (validate(e.which)) {
+                if (centre[0] < height - 1) {
+                    centre = render([centre[0] + 1, centre[1]]);
                     return centre;
                 }
-                break;
-            case 0:
-            case 32: //space pressed
-                bomb(); //place bomb
-                break;
-            default:
-                return; // exit this handler for other keys
-        }
+            }
+            break;
+        case 0:
+        case 32:
+            e.preventDefault();
+            bomb();
+            break;
+        default:
+            return; // exit this handler for other keys
     }
 });
 
