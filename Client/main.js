@@ -114,7 +114,7 @@ function validate(direction) { //checks depending on direction as to
 
 function bomb() {
     if (!bombDisabled) {
-        socket.send('{ "op": 6, data: {"x": ' + centre[1]+ ', "y": ' + centre[0] + '}');
+        socket.send('{ "op": 6, data: {"x": ' + centre[1]+ ', "y": ' + centre[0] + '}}');
         bombDisabled = true;
         setTimeout(function() { //start 4-second timer for bomb
             bombDisabled = false;
@@ -172,6 +172,7 @@ $(document).keydown(function(e) {
         default:
             return; // exit this handler for other keys
     }
+    centre = render(centre);
 });
 
 //Resize function
@@ -191,8 +192,8 @@ function opcodeManagement(socket) {
                 height = received_msg["data"]["map"]["height"];
                 break;
             case 3:
-                console.log("3 received. You're now literally God.");
-                admin = true;
+                //console.log("3 received. You're now literally God.");
+                //admin = true;
                 break;
             case 4:
                 console.log("4 received.");
@@ -230,8 +231,13 @@ function opcodeManagement(socket) {
                 //add bomb to tile and alert server
                 break;
             case 7:
-                //???
+                for (i=0; i<Object.keys(received_msg["data"]).length; i++) {
+                  destroyedX = received_msg["data"][i]["x"];
+                  destroyedY = received_msg["data"][i]["y"];
+                  grid[destroyedY][destroyedX]["Entities"] = [];
+                }
                 console.log("Explosion!");
+                centre = render(centre);
                 break;
             case 8:
                 //render new killfeed entry in iframe
