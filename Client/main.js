@@ -114,7 +114,7 @@ function validate(direction) { //checks depending on direction as to
 
 function bomb() {
     if (!bombDisabled) {
-        socket.send('{ "op": 6, data: {"x": ' + centre[1]+ ', "y": ' + centre[0] + '}}');
+        socket.send('{ "op": 6, data: {"x": ' + centre[1] + ', "y": ' + centre[0] + '}}');
         bombDisabled = true;
         setTimeout(function() { //start 4-second timer for bomb
             bombDisabled = false;
@@ -231,12 +231,13 @@ function opcodeManagement(socket) {
                 //add bomb to tile and alert server
                 break;
             case 7:
-                for (i=0; i<Object.keys(received_msg["data"]).length; i++) {
-                  destroyedX = received_msg["data"][i]["x"];
-                  destroyedY = received_msg["data"][i]["y"];
-                  grid[destroyedY][destroyedX]["Entities"] = [];
-                }
                 console.log("Explosion!");
+                for (i=0; i<received_msg["data"].length; i++) {
+                  xc = received_msg["data"][i]["x"];
+                  yc = received_msg["data"][i]["y"];
+                  grid[yc][xc]["Entities"] = [];
+                  console.log(yc, xc);
+                }
                 centre = render(centre);
                 break;
             case 8:
