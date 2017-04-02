@@ -2,17 +2,20 @@ var text = "";
 var grid = ""; //JSON.parse(text)["tiles"];
 var fov = 13;
 var fovradius = Math.floor(fov / 2);
-var width = ""; //JSON.parse(text)["width"];
-var height = ""; //JSON.parse(text)["height"];
-var centre = [5, 5];
+var width = 64; //JSON.parse(text)["width"];
+var height = 64; //JSON.parse(text)["height"];
+//var centre = [5, 5];
 var bombDisabled = false;
 var admin = false;
+var x;
+var y;
 const socket = new WebSocket('ws://138.68.178.39:12345');
 
 function render(centre) {
     fovradius = Math.floor(fov / 2);
-    var y = centre[0] - fovradius;
-    var x = centre[1] - fovradius;
+    y = centre[0] - fovradius;
+    x = centre[1] - fovradius;
+    console.log(y,x);
     $('.gridSquare').each(function(i, obj) {
         var outOfBoundsY = y < 0 || y >= height;
         var outOfBoundsX = x < 0 || x >= width;
@@ -23,11 +26,13 @@ function render(centre) {
             $(obj).css("border", "5px solid white");
             $(obj).css("border-radius", "0px");
         } else {
-            if (grid[y][x]["Entities"][0] == undefined) {
+            if (typeof grid[y][x]["Entities"][0] == "undefined") {
+              console.log("undef");
                 $(obj).css("background-color", "grey");
                 $(obj).css("border", "5px solid grey");
                 $(obj).css("border-radius", "0px");
             } else {
+                console.log("etype: ", grid[y][x]["Entities"][0]["EntityType"])
                 switch (grid[y][x]["Entities"][0]["EntityType"]) {
                     case 0:
                         $(obj).css("background-color", "red");
@@ -187,6 +192,8 @@ function opcodeManagement(socket) {
             case 2:
                 console.log(received_msg);
                 grid = received_msg["data"]["map"]["tiles"];
+                width = received_msg["data"]["map"]["width"];
+                height = received_msg["data"]["map"]["height"];
                 break;
             case 3:
                 admin = true;
@@ -194,7 +201,8 @@ function opcodeManagement(socket) {
             case 4:
                 console.log("4 received.");
                 console.log(received_msg);
-                render([received_msg["data"][0]["y"], received_msg["data"][0]["x"]])
+                centre = [received_msg["data"][0]["y"], received_msg["data"][0]["x"]];
+                render(centre);
                 break;
             case 5:
                 var x = received_msg["data"]["x"];
@@ -219,7 +227,7 @@ function opcodeManagement(socket) {
                         "EntityType": 0
                     }];
                 }
-                grid[y][x]["Entities"] = [{}];
+                grid[y][x]["Entities"] = [];
                 break;
             case 6:
                 console.log("bomb!");
