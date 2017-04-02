@@ -10,8 +10,8 @@ var centre = [5, 5];
 var bombDisabled = false;
 
 function render(centre) {
-    var y = centre[0] - fovradius;
-    var x = centre[1] - fovradius;
+    var y = centre[0] - fovradius; //upper boundary
+    var x = centre[1] - fovradius; //left side boundary
     $('.gridSquare').each(function(i, obj) {
         var outOfBoundsY = y < 0 || y >= height;
         var outOfBoundsX = x < 0 || x >= width;
@@ -24,26 +24,26 @@ function render(centre) {
                 $(obj).css("fill", "grey");
             } else {
                 switch (grid[y][x]["Entities"][0]["EntityType"]) {
-                    case 0:
+                    case 0: //Player
                         $(obj).css("fill", "red");
                         break;
-                    case 1:
+                    case 1: //Bomb
                         $(obj).css("fill", "black");
                         break;
-                    case 2:
+                    case 2: //Unbreakable wall
                         $(obj).css("fill", "brown");
                         break;
-                    case 3:
+                    case 3: //Breakable wall
                         $(obj).css("fill", "orange");
                         break;
-                    default:
+                    default: //empty space
                         $(obj).css("fill", "grey");
                         break;
                 }
             }
         }
         if (y == centre[0] && x == centre[1]) {
-            $(obj).css("fill", "cyan");
+            $(obj).css("fill", "cyan"); //current player
         }
         x += 1;
         if (x == centre[1] + fovradius + 1) {
@@ -54,7 +54,7 @@ function render(centre) {
     return centre;
 };
 
-function resize() {
+function resize() { //resize game screen to window
     var sizeX = $(window).width();
     var sizeY = $(window).height();
     $('#game').attr("width", sizeY);
@@ -74,27 +74,28 @@ function resize() {
     });
 }
 
-function validate(direction) {
+function validate(direction) { //checks depending on direction as to
+  //what's in the destination space
     y = centre[0];
     x = centre[1];
     switch (direction) {
         case 0:
-        case 32:
+        case 32: //set bomb
             return grid[y][x]["Entities"][0] == undefined;
             break;
-        case 37:
+        case 37: //move left
             return grid[y][x - 1]["Entities"][0] == undefined;
             break;
-        case 38:
+        case 38: //move up
             return grid[y - 1][x]["Entities"][0] == undefined;
             break;
-        case 39:
+        case 39: //move right
             return grid[y][x + 1]["Entities"][0] == undefined;
             break;
-        case 40:
+        case 40: //move down
             return grid[y + 1][x]["Entities"][0] == undefined;
             break;
-        default:
+        default: //fail
             return false;
             break;
     }
@@ -104,10 +105,10 @@ function validate(direction) {
 function bomb() {
     if (!bombDisabled) {
         grid[centre[0]][centre[1]]["Entities"][0] = {
-            "EntityType": 1
+            "EntityType": 1 //place bomb (1) at current space
         };
         bombDisabled = true;
-        setTimeout(function() {
+        setTimeout(function() { //start 4-second timer for bomb
             bombDisabled = false;
         }, 4000);
     }
@@ -117,37 +118,37 @@ $(document).keydown(function(e) {
     e.preventDefault();
     if (validate(e.which)) {
         switch (e.which) {
-            case 37: // left
-                if (centre[1] > 0) {
-                    centre = render([centre[0], centre[1] - 1]);
+            case 37: // move left
+                if (centre[1] > 0) { //if within left boundary
+                    centre = render([centre[0], centre[1] - 1]); //render with the player's position one space to the left
                     return centre;
                 }
                 break;
 
             case 38: // up
-                if (centre[0] > 0) {
-                    centre = render([centre[0] - 1, centre[1]]);
+                if (centre[0] > 0) { //if within upper boundary
+                    centre = render([centre[0] - 1, centre[1]]); //render with the player's position upward by one
                     return centre;
                 }
                 break;
 
             case 39: // right
-                if (centre[1] < width - 1) {
-                    centre = render([centre[0], centre[1] + 1]);
+                if (centre[1] < width - 1) { //if within right boundary
+                    centre = render([centre[0], centre[1] + 1]); //render with the player's position right by one
                     console.log(centre);
                     return centre;
                 }
                 break;
 
             case 40: // down
-                if (centre[0] < height - 1) {
-                    centre = render([centre[0] + 1, centre[1]]);
+                if (centre[0] < height - 1) { //if within lower boundary
+                    centre = render([centre[0] + 1, centre[1]]); //render with the player's position down by one
                     return centre;
                 }
                 break;
             case 0:
-            case 32:
-                bomb();
+            case 32: //space pressed
+                bomb(); //place bomb
                 break;
             default:
                 return; // exit this handler for other keys
