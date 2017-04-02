@@ -1,17 +1,19 @@
 <!DOCTYPE html>
+
+<html>
 <head>
     <meta charset="utf-8">
     <title></title>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.slim.min.js">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 </head>
+<script>
+    $( document ).ready(function() {
+        var webSocket = new WebSocket('ws://138.68.178.39:12345');
+        webSocket.onopen = function (event) {
+            webSocket.send("hello");
+        }
+    });
 
-var webSocket = $.simpleWebSocket({ url: 'ws://138.68.178.39:DOTHIS/' });
-
-webSocket.send({ 'left': 'left' }).done(function() {
-    // message send
-}).fail(function(e) {
-    // error sending
-});
 </script>
-
+</html>
 
