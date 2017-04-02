@@ -8,6 +8,7 @@ var width = JSON.parse(text)["width"];
 var height = JSON.parse(text)["height"];
 var centre = [5, 5];
 var bombDisabled = false;
+const socket = new WebSocket('ws://138.68.178.39:12345');
 
 function render(centre) {
     var y = centre[0] - fovradius;
@@ -117,12 +118,15 @@ function bomb() {
 }
 
 $(document).keydown(function(e) {
+
+
     switch (e.which) {
-        case 37: // left
+        case 37: // move left
             e.preventDefault();
             if (validate(e.which)) {
-                if (centre[1] > 0) {
-                    centre = render([centre[0], centre[1] - 1]);
+                if (centre[1] > 0) { //if within left boundary
+                    centre = render([centre[0], centre[1] - 1]); //render with the player's position one space to the left
+                    socket.send('{ "op": 5, "data": "Left"}');
                     return centre;
                 }
             }
@@ -133,8 +137,10 @@ $(document).keydown(function(e) {
             if (validate(e.which)) {
                 if (centre[0] > 0) {
                     centre = render([centre[0] - 1, centre[1]]);
-                    return centre;
+                    socket.send('{ "op": 5, "data": "Up"}');
                 }
+
+                return centre;
             }
             break;
 
@@ -143,9 +149,9 @@ $(document).keydown(function(e) {
             if (validate(e.which)) {
                 if (centre[1] < width - 1) {
                     centre = render([centre[0], centre[1] + 1]);
-                    console.log(centre);
-                    return centre;
+                    socket.send('{ "op": 5, "data": "Right"}');
                 }
+                return centre;
             }
             break;
 
@@ -154,8 +160,10 @@ $(document).keydown(function(e) {
             if (validate(e.which)) {
                 if (centre[0] < height - 1) {
                     centre = render([centre[0] + 1, centre[1]]);
-                    return centre;
+                    socket.send('{ "op": 5, "data": "Down"}');
+
                 }
+                return centre;
             }
             break;
         case 0:
@@ -170,7 +178,11 @@ $(document).keydown(function(e) {
 
 //Resize function
 window.onresize = window.onload = function() {
+
     resize();
 }
 
-$(document).ready(render(centre));
+$(document).ready(function() {
+    socket.addEventListener('open', function(event) {console.log("Socket opened.")});
+    render(centre);
+});
