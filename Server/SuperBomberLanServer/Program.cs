@@ -55,6 +55,12 @@ namespace SuperBomberLanServer
 
             Console.WriteLine("Waiting for admin client to connect...");
 
+            if (Console.ReadKey(true).Key == ConsoleKey.Q)
+            {
+                Server.Close(false);
+                Environment.Exit(0);
+            }
+
             await Task.Delay(-1);
         }
     }
