@@ -114,9 +114,7 @@ function validate(direction) { //checks depending on direction as to
 
 function bomb() {
     if (!bombDisabled) {
-        grid[centre[0]][centre[1]]["Entities"][0] = {
-            "EntityType": 1 //place bomb (1) at current space
-        };
+        socket.send('{ "op": 6, data: {"x": ' + centre[1]+ ', "y": ' + centre[0] + '}');
         bombDisabled = true;
         setTimeout(function() { //start 4-second timer for bomb
             bombDisabled = false;
@@ -187,6 +185,7 @@ function opcodeManagement(socket) {
         switch (received_msg["op"]) {
             case 2:
                 console.log(received_msg);
+                my_id = received_msg["data"]["id"]
                 grid = received_msg["data"]["map"]["tiles"];
                 width = received_msg["data"]["map"]["width"];
                 height = received_msg["data"]["map"]["height"];
@@ -260,5 +259,5 @@ $(document).ready(function() {
     socket.addEventListener('open', function(event) {
         console.log("Socket opened.")
     });
-    setInterval(opcodeManagement(socket), 1000);
+    setInterval(opcodeManagement(socket), 100);
 });
